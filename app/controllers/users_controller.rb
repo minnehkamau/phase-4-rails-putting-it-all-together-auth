@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+    rescue_from ActiveRecord::RecordInvalid, with: :record_invalid
     def create
         user = User.create(user_params)
         if user.valid?
@@ -23,7 +24,10 @@ class UsersController < ApplicationController
 
     private
     def user_params
-        params.permit(:username, :password, :password_confirmation)
+        params.permit(:username, :password, :password_confirmation, :image_url, :bio)
+    end
+    def record_invalid(invalid)
+        render json: {errors: invalid.record.errors.full_messages}, status: :unprocessable_entity
     end
 
 end
